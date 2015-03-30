@@ -1,0 +1,130 @@
+<?php
+
+class ConditionReportPlugin extends Omeka_Plugin_AbstractPlugin
+{
+protected $_hooks = array(
+		'install',
+      'uninstall',
+		'public_items_show',
+		
+);
+
+protected $_filters = array(
+		'admin_items_form_tabs'
+
+);
+
+ public function hookInstall()
+    {
+    	$db = get_db();
+    	$sql = "
+        CREATE TABLE IF NOT EXISTS `$db->Condition_req`(
+        `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `item_id` BIGINT(20) UNSIGNED NOT NULL,
+        `time` INT(10) UNSIGNED NOT NULL,
+        `S_Chk` tinyint(1) NOT NULL,
+        `S_Txt` varchar(150) NOT NULL,
+        `B_Chk` tinyint(1) NOT NULL,
+        `B_Txt` varchar(150) NOT NULL,
+        INDEX (`item_id`)) ENGINE = InnoDB";
+        $db->query($sql);
+        //Damages Table
+      $sql = "
+      CREATE TABLE IF NOT EXISTS `$db->Condition_dmg`(
+      `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      `item_id` BIGINT(20) UNSIGNED NOT NULL,
+      `req_id` BIGINT(20) NOT NULL,
+      `stable` TINYINT(1) NULL,
+      `inside` TINYINT(1) NULL,
+      `broken` TINYINT(1) NULL,
+      `bent`	TINYINT(1) NULL,
+      `spall`  TINYINT(1) NULL,
+      `crack`	TINYINT(1) NULL,
+      `etch` 	TINYINT(1) NULL,
+      `corode` TINYINT(1) NULL,
+      `chalk`	TINYINT(1) NULL,
+      `stain`  TINYINT(1) NULL,
+      `growth` TINYINT(1) NULL,
+      `crust`  TINYINT(1) NULL,
+      `guano`	TINYINT(1) NULL,
+      `dirt`	TINYINT(1) NULL,
+      `water`  TINYINT(1) NULL,
+      `scrat`  TINYINT(1) NULL,
+      `graff`  TINYINT(1) NULL,
+      `other`  TINYINT(1) NULL,
+      `fix`		TINYINT(1) NULL,
+      `cond`	TINYINT(1) NULL,
+      INDEX (`item_id`),
+      FOREIGN KEY (`dmg_req_id`)
+      	REFERENCES `$db->Condition_req(`id`)`) ENGINE = InnoDB";
+       $db->query($sql);
+      //damages text table
+      $sql = "
+      CREATE TABLE IF NOT EXISTS `$db->Condition_txt`(
+      `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      `item_id` BIGINT(20) UNSIGNED NOT NULL,
+      `req_id` BIGINT(20) NOT NULL,
+      `stable` VARCHAR(150) NULL,
+      `inside` VARCHAR(150) NULL,
+      `broken` VARCHAR(150) NULL,
+      `bent`   VARCHAR(150) NULL,
+      `spall`  VARCHAR(150) NULL,
+      `crack`  VARCHAR(150) NULL,
+      `etch`   VARCHAR(150) NULL,
+      `corode` VARCHAR(150) NULL,
+      `chalk`  VARCHAR(150) NULL,
+      `etch`   VARCHAR(150) NULL,
+      `corode` VARCHAR(150) NULL,
+      `chalk`  VARCHAR(150) NULL,
+      `stain`  VARCHAR(150) NULL,
+      `growth` VARCHAR(150) NULL,
+      `crust`  VARCHAR(150) NULL,
+      `guano`  VARCHAR(150) NULL,
+      `dirt`   VARCHAR(150) NULL,
+      `water`  VARCHAR(150) NULL,
+      `scrat`  VARCHAR(150) NULL,
+      `graff`  VARCHAR(150) NULL,
+      `other`  VARCHAR(150) NULL,
+      `repair` VARCHAR(150) NULL,
+      `loctxt` VARCHAR(150) NULL,
+      INDEX (`item_id`),
+      FOREIGN KEY (`txt_req_id`)
+      	REFERENCES `$db->Condition_req(`id`)`) ENGINE = InnoDB";
+     $db->query($sql); 	
+     //Location
+     $sql = "
+     CREATE TABLE IF NOT EXISTS `$db->Condition_loc`(
+     `id` 		BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     `item_id` BIGINT(20) UNSIGNED NOT NULL,
+     `req_id`  BIGINT(20) NOT NULL,
+     `gener`   TINYINT(1) NULL,
+	  `elmnt`   TINYINT(1) NULL,
+	  `public`  TINYINT(1) NULL,
+	  `tree`    TINYINT(1) NULL,
+	  `street`  TINYINT(1) NULL,
+	  `indust`  TINYINT(1) NULL,
+	  `airport` TINYINT(1) NULL,
+	  `train`   TINYINT(1) NULL,
+	  `other`   TINYINT(1) NULL,
+     INDEX (`item_id`),
+     FOREIGN KEY (`loc_req_id`)
+      	REFERENCES `$db->Condition_req(`id`)`) ENGINE = InnoDB";
+     $db->query($sql);
+    }
+ public function hookUninstall(){
+		$db = get_db();
+		$sql = "DROP TABLE IF EXISTS `$db->Condition_loc`";
+		$db->query($sql);
+		$sql = "DROP TABLE IF EXISTS `$db->Condition_txt`";
+		$db->query($sql);
+		$sql = "DROP TABLE IF EXISTS `$db->Condition_dmg`";
+		$db->query($sql);
+		$sql = "DROP TABLE IF EXISTS `$db->Condition_req`";
+		$db->query($sql);
+	}
+
+
+
+}
+
+?>
